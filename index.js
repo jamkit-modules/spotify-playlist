@@ -41,7 +41,7 @@ var module = (function() {
             }
 
             webjs.initialize(id + ".web", "__$_bridge");
-            _get_objec(id, function(object) {
+            _get_object(id, function(object) {
                 object.action("load", { 
                     "filename": dir_path + "/web.sbml",
                     "dir-path": dir_path,
