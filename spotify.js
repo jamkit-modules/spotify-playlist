@@ -10,7 +10,6 @@ function _getMusicsForMobile(musicsData, musicsKeys, onResult, onError) {
     try {
         var musicsTags = document.getElementsByClassName('EntityRowV2__Container-sc-1ogsdp5-0');
         
-        console.log("musicsTags: " + musicsTags.length);
         if (musicsTags.length === 0) {
             setTimeout(function() {
                 _getMusicsForMobile(musicsData, musicsKeys, onResult, onError);
@@ -88,7 +87,7 @@ function _getMusicsForDesktop(musicsData, musicsKeys, onResult, onError) {
                 musics.push(musicsData[key]);
             });
 
-            onResult(musics);
+            onResult({ "musics": musics });
         } else {
             setTimeout(function() {
                 _getMusicsForDesktop(musicsData, musicsKeys, onResult, onError);
@@ -97,6 +96,53 @@ function _getMusicsForDesktop(musicsData, musicsKeys, onResult, onError) {
     } catch (e) {
         setTimeout(function() {
             _getMusicsForDesktop(musicsData, musicsKeys, onResult, onError);
+        }, 200);
+    }
+}
+
+function getAlbumImage(isMobile, onResult, onError) {
+    if (isMobile) {
+        _getAlbumImageForMobile(onResult, onError);
+    } else {
+        _getAlbumImageForDesktop(onResult, onError);
+    }
+}
+
+function _getAlbumImageForMobile(onResult, onError) {
+    try {
+        var imageTag = document.getElementsByClassName('AlbumArt__AlbumImage-sc-4up5tn-1')[0];
+        var imageStyle = window.getComputedStyle(imageTag);
+        var imageUrl = imageStyle.getPropertyValue('background-image').match(/url\(\"(.+)\"\)/)[1];
+
+        if (imageUrl && imageUrl !== "about:blank") {
+            onResult({ "url": imageUrl });
+        } else {
+            setTimeout(function() {
+                _getAlbumImageForMobile(onResult, onError);
+            }, 200);
+        }
+    } catch (e) {
+        setTimeout(function() {
+            _getAlbumImageForMobile(onResult, onError);
+        }, 200);
+    }
+}
+
+function _getAlbumImageForDesktop(onResult, onError) {
+    try {
+        var wrapperTag = document.getElementsByClassName('_9e10063a7b1e2d5f588e34f07376302a-scss')[0];
+        var imageTag = wrapperTag.getElementsByTagName('img')[0];
+
+        if (imageTag.src) {
+            onResult(imageTag.src);
+        } else {
+            setTimeout(function() {
+                _getAlbumImageForDesktop(onResult, onError);
+            }, 200);
+        }
+    } catch (e) {
+        setTimeout(function() {
+            _getAlbumImageForDesktop(onResult, onError);
         }, 200);
     }
 }

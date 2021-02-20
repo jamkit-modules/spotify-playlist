@@ -3,8 +3,8 @@
 =object web: id=${web-id}.web, url="https://open.spotify.com/playlist/${playlist-id}", \
             javascript-bridge="__$_bridge", \
             content-script@start=${dir-path}/cleanup.js, blocks-image=yes, \
+            blocking-url-patterns="intent://", \
             script-when-loaded=${web-prefix}__on_web_loaded, \
-            script-when-start=${web-prefix}__on_web_start, \
-            console-message-enabled=yes, style=web
+            style=web
 
 =end sbml

@@ -6,7 +6,6 @@ var module = (function() {
     var _web_loaded = false;
     
     function _on_web_loaded(data) {
-        console.log(data["url"])
         if (data["url"].startsWith("https://open.spotify.com/playlist")) {
             webjs.import(_dir_path + "/spotify.js");
 
@@ -15,14 +14,6 @@ var module = (function() {
             });
 
             _web_loaded = true, _handlers = [];
-
-            return;
-        }
-    }
-
-    function _on_web_start(data) {
-        if (data["url"].startsWith("intent://")) {
-            view.object(_id + ".web").action("home");
 
             return;
         }
@@ -38,16 +29,14 @@ var module = (function() {
             global[web_prefix + "__on_web_loaded"] = function(data) {
                 _on_web_loaded(data);
             }
-            global[web_prefix + "__on_web_start"] = function(data) {
-                _on_web_start(data);
-            }
 
             view.object(id).action("load", { 
                 "filename": dir_path + "/web.sbml",
                 "dir-path": dir_path,
                 "web-id": id, 
                 "web-prefix": web_prefix,
-                "playlist-id": playlist_id
+                "playlist-id": playlist_id,
+                "mobile": is_mobile ? "yes" : "no"
             });
 
             _id = id, _dir_path = dir_path;
@@ -69,12 +58,28 @@ var module = (function() {
                         })
                         .catch(function(error) {
                             reject(error);
-                        })
+                        });
                 }
 
                 _web_loaded ? handler() : _handlers.push(handler);
             });
         },
+
+        get_album_image: function() {
+            return new Promise(function(resolve, reject) {
+                var handler = function() {
+                    webjs.call("getAlbumImage", [ _is_mobile ])
+                        .then(function(result) {
+                            resolve(result);
+                        })
+                        .catch(function(error) {
+                            reject(error);
+                        });
+                }
+
+                _web_loaded ? handler() : _handlers.push(handler);
+            });
+        }
     }
 })();
 
