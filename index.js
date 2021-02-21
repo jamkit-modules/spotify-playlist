@@ -18,18 +18,6 @@ var module = (function() {
             return;
         }
     }
-    
-    function _get_object(id, handler) {
-        const object = view.object(id);
-
-        if (!object) {
-            timeout(0.1, function() {
-                _get_object(id, handler);
-            });
-        } else {
-            handler(object);
-        }
-    }
 
     return {
         initialize: function(id, playlist_id, is_mobile) {
@@ -41,15 +29,13 @@ var module = (function() {
             }
 
             webjs.initialize(id + ".web", "__$_bridge");
-            _get_object(id, function(object) {
-                object.action("load", { 
-                    "filename": dir_path + "/web.sbml",
-                    "dir-path": dir_path,
-                    "web-id": id, 
-                    "web-prefix": web_prefix,
-                    "playlist-id": playlist_id,
-                    "mobile": is_mobile ? "yes" : "no"
-                });
+            view.object(id).action("load", { 
+                "filename": dir_path + "/web.sbml",
+                "dir-path": dir_path,
+                "web-id": id, 
+                "web-prefix": web_prefix,
+                "playlist-id": playlist_id,
+                "mobile": is_mobile ? "yes" : "no"
             });
 
             _id = id, _dir_path = dir_path;
