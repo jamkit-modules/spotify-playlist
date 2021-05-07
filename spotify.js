@@ -6,72 +6,72 @@ function getMusics(isMobile, onResult, onError) {
     }
 }
 
-function _getMusicsForMobile(musicsData, musicsKeys, onResult, onError) {
+function _getMusicsForMobile(musicData, musicKeys, onResult, onError) {
     try {
-        var musicsTags = document.getElementsByClassName('EntityRowV2__Container-sc-1ogsdp5-0');
+        var musicTags = document.getElementsByClassName('EntityRowV2__Container-sc-1ogsdp5-0');
         
-        if (musicsTags.length === 0) {
+        if (musicTags.length === 0) {
             setTimeout(function() {
-                _getMusicsForMobile(musicsData, musicsKeys, onResult, onError);
+                _getMusicsForMobile(musicData, musicKeys, onResult, onError);
             }, 200);
 
             return;
         }
 
-        for (var i = 0; i < musicsTags.length; ++i) {
-            var anchorTags = musicsTags[i].getElementsByClassName('Row__Container-sc-1mo2gpu-0')[0].getElementsByTagName('a');
+        for (var i = 0; i < musicTags.length; ++i) {
+            var anchorTags = musicTags[i].getElementsByClassName('Row__Container-sc-1mo2gpu-0')[0].getElementsByTagName('a');
             var trackUrl = anchorTags[0].href;
 
-            if (!musicsKeys.includes(trackUrl)) {
-                musicsData[trackUrl] = {
+            if (!musicKeys.includes(trackUrl)) {
+                musicData[trackUrl] = {
                     "title": anchorTags[0].textContent,
                     "singer": anchorTags[1].textContent
                 }
-                musicsKeys.push(trackUrl);
+                musicKeys.push(trackUrl);
             }
         }
 
-        var listTag = document.getElementsByClassName('EntityView__Container-sc-1lc2zv4-0')[0];
-        var footerTags = document.getElementsByClassName('PlaylistEntityView__Heading-sc-1qgncvr-3');
+        var listTag = document.getElementsByClassName('EntityView__Container-sc-1kbeo3t-0')[0];
+        var footerTags = document.getElementsByClassName('CardGrid-sc-35jz0b-0');
 
         listTag.scrollTop = listTag.scrollHeight - listTag.clientHeight;
 
         if (footerTags.length > 0) {
             var musics = [];
 
-            musicsKeys.forEach(function(key) {
-                musics.push(musicsData[key]);
+            musicKeys.forEach(function(key) {
+                musics.push(musicData[key]);
             });
 
             onResult({ "musics": musics });
         } else {
             setTimeout(function() {
-                _getMusicsForMobile(musicsData, musicsKeys, onResult, onError);
+                _getMusicsForMobile(musicData, musicKeys, onResult, onError);
             }, 200);
         }
     } catch (e) {
         setTimeout(function() {
-            _getMusicsForMobile(musicsData, musicsKeys, onResult, onError);
+            _getMusicsForMobile(musicData, musicKeys, onResult, onError);
         }, 200);
     }
 }
 
-function _getMusicsForDesktop(musicsData, musicsKeys, onResult, onError) {
+function _getMusicsForDesktop(musicData, musicKeys, onResult, onError) {
     try {
-        var musicsTags = document.querySelectorAll("div[role='row']");
+        var musicTags = document.querySelectorAll("div[role='row']");
 
-        for (var i = 0; i < musicsTags.length; ++i) {
-            var rowIndex = musicsTags[i].getAttribute('aria-rowindex');
+        for (var i = 0; i < musicTags.length; ++i) {
+            var rowIndex = musicTags[i].getAttribute('aria-rowindex');
 
             if (rowIndex !== "1") {
-                var songTag = musicsTags[i].getElementsByClassName('da0bc4060bb1bdb4abb8e402916af32e-scss')[0];
-                var artistTag = musicsTags[i].getElementsByClassName('_966e29b71d2654743538480947a479b3-scss')[0];
+                var songTag = musicTags[i].getElementsByClassName('da0bc4060bb1bdb4abb8e402916af32e-scss')[0];
+                var artistTag = musicTags[i].getElementsByClassName('_966e29b71d2654743538480947a479b3-scss')[0];
 
-                musicsData[rowIndex] = {
+                musicData[rowIndex] = {
                     "title": songTag.textContent,
                     "singer": artistTag.textContent
                 }
-                musicsKeys.push(rowIndex);
+                musicKeys.push(rowIndex);
             }
         }
 
@@ -83,19 +83,19 @@ function _getMusicsForDesktop(musicsData, musicsKeys, onResult, onError) {
         if (listTag.scrollTop === lastScrollTop) {
             var musics = [];
 
-            musicsKeys.forEach(function(key) {
-                musics.push(musicsData[key]);
+            musicKeys.forEach(function(key) {
+                musics.push(musicData[key]);
             });
 
             onResult({ "musics": musics });
         } else {
             setTimeout(function() {
-                _getMusicsForDesktop(musicsData, musicsKeys, onResult, onError);
+                _getMusicsForDesktop(musicData, musicKeys, onResult, onError);
             }, 100);
         }
     } catch (e) {
         setTimeout(function() {
-            _getMusicsForDesktop(musicsData, musicsKeys, onResult, onError);
+            _getMusicsForDesktop(musicData, musicKeys, onResult, onError);
         }, 200);
     }
 }
@@ -110,12 +110,11 @@ function getAlbumImage(isMobile, onResult, onError) {
 
 function _getAlbumImageForMobile(onResult, onError) {
     try {
-        var imageTag = document.getElementsByClassName('AlbumArt__AlbumImage-sc-4up5tn-1')[0];
-        var imageStyle = window.getComputedStyle(imageTag);
-        var imageUrl = imageStyle.getPropertyValue('background-image').match(/url\(\"(.+)\"\)/)[1];
-
-        if (imageUrl && imageUrl !== "about:blank") {
-            onResult({ "url": imageUrl });
+        var wrapperTag = document.getElementsByClassName('AlbumArt-sc-4up5tn-1')[0];
+        var imageTag = wrapperTag.getElementsByTagName('img')[0];
+        
+        if (imageTag.src) {
+            onResult({ "url": imageTag.src });
         } else {
             setTimeout(function() {
                 _getAlbumImageForMobile(onResult, onError);
@@ -134,7 +133,7 @@ function _getAlbumImageForDesktop(onResult, onError) {
         var imageTag = wrapperTag.getElementsByTagName('img')[0];
 
         if (imageTag.src) {
-            onResult(imageTag.src);
+            onResult({ "url": imageTag.src });
         } else {
             setTimeout(function() {
                 _getAlbumImageForDesktop(onResult, onError);
